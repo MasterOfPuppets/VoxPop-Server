@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0d958e9d-e5f5-4439-8149-409c72bb04e6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/setup_firewall.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/ModeratorApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/EventTypes.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/ForceMute.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/MessageEnvelope.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/ParticipantHandshake.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/QueueCleared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/QueueUpdate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/ServerHandshakeAck.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/SpeakRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/SpeechGranted.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/models/SpeechRevoked.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/network/signaling/SignalingServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/session/Participant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/masterofpuppets/voxpop/session/SessionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="3BnDdueN9ncQVjaHhB6Z0RQyfWq" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ModeratorApplication.executor": "Run",
+    "Gradle.VoxPop-Server [:com.masterofpuppets.voxpop.ModeratorApplication.main()].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="ModeratorApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.masterofpuppets.voxpop.ModeratorApplication" />
+      <module name="VoxPop-Server.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.masterofpuppets.voxpop.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ModeratorApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0d958e9d-e5f5-4439-8149-409c72bb04e6" name="Changes" comment="" />
+      <created>1775116034442</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1775116034442</updated>
+      <workItem from="1775116037686" duration="15647000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
