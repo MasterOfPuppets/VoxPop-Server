@@ -13,6 +13,8 @@ import com.masterofpuppets.voxpop.network.models.ServerHandshakeAck;
 import com.masterofpuppets.voxpop.network.models.SpeakRequest;
 import com.masterofpuppets.voxpop.network.models.SpeechGranted;
 import com.masterofpuppets.voxpop.network.models.SpeechRevoked;
+import com.masterofpuppets.voxpop.network.models.Unmute;
+import com.masterofpuppets.voxpop.session.Participant;
 import com.masterofpuppets.voxpop.session.SessionManager;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class SignalingServer extends WebSocketServer {
@@ -30,10 +33,21 @@ public class SignalingServer extends WebSocketServer {
     private final SessionManager sessionManager;
     private final Consumer<String> onNetworkLocked;
 
+    private Consumer<List<QueueUpdate.QueueItem>> onQueueUpdatedUI;
+    private Consumer<List<Participant>> onParticipantsUpdatedUI;
+
     public SignalingServer(int port, SessionManager sessionManager, Consumer<String> onNetworkLocked) {
         super(new InetSocketAddress(port));
         this.sessionManager = sessionManager;
         this.onNetworkLocked = onNetworkLocked;
+    }
+
+    public void setOnQueueUpdatedUI(Consumer<List<QueueUpdate.QueueItem>> onQueueUpdatedUI) {
+        this.onQueueUpdatedUI = onQueueUpdatedUI;
+    }
+
+    public void setOnParticipantsUpdatedUI(Consumer<List<Participant>> onParticipantsUpdatedUI) {
+        this.onParticipantsUpdatedUI = onParticipantsUpdatedUI;
     }
 
     @Override
@@ -47,6 +61,7 @@ public class SignalingServer extends WebSocketServer {
         sessionManager.unregisterParticipant(conn);
 
         broadcastQueueUpdate();
+        updateParticipantsUI();
     }
 
     @Override
@@ -88,6 +103,7 @@ public class SignalingServer extends WebSocketServer {
         ServerHandshakeAck ack = new ServerHandshakeAck(true, "Welcome to VoxPop!", sessionId);
 
         sendEvent(conn, EventTypes.SERVER_HANDSHAKE_ACK, gson.toJsonTree(ack));
+        updateParticipantsUI();
     }
 
     private void handleSpeakRequest(WebSocket conn, JsonElement payload) {
@@ -115,7 +131,8 @@ public class SignalingServer extends WebSocketServer {
     }
 
     private void broadcastQueueUpdate() {
-        QueueUpdate update = new QueueUpdate(sessionManager.getQueueState());
+        List<QueueUpdate.QueueItem> currentState = sessionManager.getQueueState();
+        QueueUpdate update = new QueueUpdate(currentState);
         MessageEnvelope envelope = new MessageEnvelope(EventTypes.QUEUE_UPDATE, gson.toJsonTree(update));
         String jsonMessage = gson.toJson(envelope);
 
@@ -126,40 +143,67 @@ public class SignalingServer extends WebSocketServer {
         });
 
         logger.debug("Broadcasted QueueUpdate to all clients");
+
+        if (onQueueUpdatedUI != null) {
+            onQueueUpdatedUI.accept(currentState);
+        }
     }
 
-    // --- Actions Triggered by the Moderator (Server-side API) ---
+    private void updateParticipantsUI() {
+        if (onParticipantsUpdatedUI != null) {
+            onParticipantsUpdatedUI.accept(sessionManager.getAllParticipants());
+        }
+    }
 
     public void grantSpeechToParticipant(String sessionId) {
         if (sessionManager.grantSpeech(sessionId)) {
             WebSocket conn = sessionManager.getConnectionBySessionId(sessionId);
-            SpeechGranted payload = new SpeechGranted(sessionId);
-            sendEvent(conn, EventTypes.SPEECH_GRANTED, gson.toJsonTree(payload));
 
-            // Broadcast the queue update because the participant was removed from the waiting line
+            SpeechGranted speechPayload = new SpeechGranted(sessionId);
+            sendEvent(conn, EventTypes.SPEECH_GRANTED, gson.toJsonTree(speechPayload));
+
+            Unmute unmutePayload = new Unmute(sessionId);
+            sendEvent(conn, EventTypes.UNMUTE, gson.toJsonTree(unmutePayload));
+
             broadcastQueueUpdate();
+            updateParticipantsUI();
         }
     }
 
     public void revokeSpeechFromParticipant(String sessionId) {
         if (sessionManager.revokeSpeech(sessionId)) {
             WebSocket conn = sessionManager.getConnectionBySessionId(sessionId);
+
             SpeechRevoked payload = new SpeechRevoked(sessionId);
             sendEvent(conn, EventTypes.SPEECH_REVOKED, gson.toJsonTree(payload));
+
+            broadcastQueueUpdate();
+            updateParticipantsUI();
         }
     }
 
-    public void forceMuteParticipant(String sessionId) {
+    public void toggleMuteParticipant(String sessionId) {
+        boolean isNowMuted = sessionManager.toggleMute(sessionId);
         WebSocket conn = sessionManager.getConnectionBySessionId(sessionId);
+
         if (conn != null) {
-            ForceMute payload = new ForceMute(sessionId);
-            sendEvent(conn, EventTypes.FORCE_MUTE, gson.toJsonTree(payload));
-            logger.info("ForceMute event sent to session: {}", sessionId);
+            if (isNowMuted) {
+                ForceMute mutePayload = new ForceMute(sessionId);
+                sendEvent(conn, EventTypes.FORCE_MUTE, gson.toJsonTree(mutePayload));
+                logger.info("ForceMute event sent to session: {}", sessionId);
+            } else {
+                Unmute unmutePayload = new Unmute(sessionId);
+                sendEvent(conn, EventTypes.UNMUTE, gson.toJsonTree(unmutePayload));
+                logger.info("Unmute event sent to session: {}", sessionId);
+            }
         }
+
+        broadcastQueueUpdate();
+        updateParticipantsUI();
     }
 
-    public void clearParticipantQueue() {
-        sessionManager.clearQueue();
+    public void closeTopic() {
+        sessionManager.closeTopic();
 
         QueueCleared payload = new QueueCleared();
         MessageEnvelope envelope = new MessageEnvelope(EventTypes.QUEUE_CLEARED, gson.toJsonTree(payload));
@@ -173,8 +217,8 @@ public class SignalingServer extends WebSocketServer {
 
         logger.info("QueueCleared event broadcasted to all clients");
 
-        // Also broadcast the empty queue to ensure state consistency
         broadcastQueueUpdate();
+        updateParticipantsUI();
     }
 
     @Override

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.masterofpuppets.voxpop.ui.ModeratorController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <Label text="VoxPop Moderator Control Panel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10.0">
+        <Label text="Current Speaker(s):" style="-fx-font-weight: bold;"/>
+        <Label fx:id="currentSpeakerLabel" text="None" style="-fx-text-fill: green; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+            <Label text="Connected Participants:" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="participantsListView" VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+            <Label text="Speak Queue:" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="queueListView" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Button fx:id="btnCloseTopic" text="Close Topic" onAction="#onCloseTopic"/>
+    </HBox>
+</VBox>

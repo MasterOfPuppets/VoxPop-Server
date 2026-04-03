@@ -2,6 +2,13 @@ package com.masterofpuppets.voxpop;
 
 import com.masterofpuppets.voxpop.network.signaling.SignalingServer;
 import com.masterofpuppets.voxpop.session.SessionManager;
+import com.masterofpuppets.voxpop.ui.ModeratorController;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ModeratorApplication {
+public class ModeratorApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(ModeratorApplication.class);
     private static final int PORT = 8887;
@@ -25,17 +32,45 @@ public class ModeratorApplication {
     private static final Map<String, JmDNS> jmdnsInstances = new ConcurrentHashMap<>();
     private static final AtomicBoolean isNetworkLocked = new AtomicBoolean(false);
 
-    public static void main(String[] args) {
-        SessionManager sessionManager = new SessionManager();
+    private SignalingServer signalingServer;
 
-        SignalingServer signalingServer = new SignalingServer(PORT, sessionManager, localIp -> {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/masterofpuppets/voxpop/ui/moderator_view.fxml"));
+        Parent root = loader.load();
+
+        ModeratorController controller = loader.getController();
+
+        SessionManager sessionManager = new SessionManager();
+        signalingServer = new SignalingServer(PORT, sessionManager, localIp -> {
             if (isNetworkLocked.compareAndSet(false, true)) {
                 logger.info("Network locked to IP: {}", localIp);
                 lockNetworkToIp(localIp);
             }
         });
+
+        controller.setDependencies(signalingServer, sessionManager);
+        signalingServer.setOnQueueUpdatedUI(controller::updateQueue);
+        signalingServer.setOnParticipantsUpdatedUI(controller::updateParticipants);
+
         signalingServer.start();
 
+        new Thread(this::initializeJmDNS).start();
+
+        primaryStage.setTitle("VoxPop Moderator");
+        primaryStage.setScene(new Scene(root, 600, 500));
+        primaryStage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
+        primaryStage.show();
+    }
+
+    private void initializeJmDNS() {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -63,24 +98,6 @@ public class ModeratorApplication {
                     }
                 }
             }
-
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                logger.info("Shutting down Moderator Application...");
-                for (JmDNS jmdns : jmdnsInstances.values()) {
-                    jmdns.unregisterAllServices();
-                    try {
-                        jmdns.close();
-                    } catch (Exception e) {
-                        logger.error("Error closing mDNS instance", e);
-                    }
-                }
-                try {
-                    signalingServer.stop();
-                } catch (InterruptedException e) {
-                    logger.error("Error stopping server", e);
-                }
-            }));
-
         } catch (Exception e) {
             logger.error("Error initializing network interfaces", e);
         }
@@ -100,5 +117,24 @@ public class ModeratorApplication {
         });
         jmdnsInstances.keySet().removeIf(ip -> !ip.equals(activeIp));
         logger.info("Network successfully locked. Only listening on {}", activeIp);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        logger.info("Shutting down Moderator Application...");
+        for (JmDNS jmdns : jmdnsInstances.values()) {
+            if (jmdns != null) {
+                jmdns.unregisterAllServices();
+                try {
+                    jmdns.close();
+                } catch (Exception e) {
+                    logger.error("Error closing mDNS instance", e);
+                }
+            }
+        }
+        if (signalingServer != null) {
+            signalingServer.stop();
+        }
+        super.stop();
     }
 }

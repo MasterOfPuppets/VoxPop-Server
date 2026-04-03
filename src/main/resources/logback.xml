@@ -1,0 +1,22 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Silence the JmDNS library noise -->
+    <logger name="javax.jmdns" level="WARN" />
+    <logger name="javax.jmdns.impl.DNSIncoming" level="WARN" />
+
+    <!-- Silence the Java-WebSocket internal noise -->
+    <logger name="org.java_websocket" level="WARN" />
+
+    <!-- Keep our application logs visible -->
+    <logger name="com.masterofpuppets.voxpop" level="DEBUG" />
+
+    <!-- Set the root level for everything else -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
